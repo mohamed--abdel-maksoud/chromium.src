@@ -52,6 +52,10 @@
 #include "third_party/WebKit/public/web/WebSecurityOrigin.h"
 #include "third_party/WebKit/public/web/WebView.h"
 
+// mohamed: my includes
+#include "third_party/WebKit/public/web/WebScriptSource.h"
+#include "third_party/WebKit/public/web/WebConsoleMessage.h"
+
 using blink::WebCanvas;
 using blink::WebMediaPlayer;
 using blink::WebRect;
@@ -170,6 +174,15 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
 }
 
 WebMediaPlayerImpl::~WebMediaPlayerImpl() {
+    
+    
+  blink::WebString message(
+      blink::WebString::fromUTF8("WebMediaPlayerImpl::~"));
+  frame_->addMessageToConsole(blink::WebConsoleMessage(
+      blink::WebConsoleMessage::LevelDebug, message));
+  const blink::WebString js = blink::WebString("window.dispatchEvent( new CustomEvent('stop-playing', { 'detail': 0 }) );");
+  frame_->executeScript(blink::WebScriptSource(js));
+  
   client_->setWebLayer(NULL);
 
   DCHECK(main_task_runner_->BelongsToCurrentThread());
@@ -252,6 +265,15 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
 void WebMediaPlayerImpl::play() {
   DVLOG(1) << __FUNCTION__;
   DCHECK(main_task_runner_->BelongsToCurrentThread());
+  
+  blink::WebString message(
+      blink::WebString::fromUTF8("WebMediaPlayerImpl::play"));
+  frame_->addMessageToConsole(blink::WebConsoleMessage(
+      blink::WebConsoleMessage::LevelDebug, message));
+  
+  const blink::WebString js = blink::WebString("window.dispatchEvent( new CustomEvent('start-playing', { 'detail': 0 }) );");
+  // TODO process id instead of 0, although not necessary
+  frame_->executeScript(blink::WebScriptSource(js));
 
   paused_ = false;
   pipeline_.SetPlaybackRate(playback_rate_);
@@ -267,6 +289,13 @@ void WebMediaPlayerImpl::play() {
 void WebMediaPlayerImpl::pause() {
   DVLOG(1) << __FUNCTION__;
   DCHECK(main_task_runner_->BelongsToCurrentThread());
+  
+  blink::WebString message(
+      blink::WebString::fromUTF8("WebMediaPlayerImpl::pause"));
+  frame_->addMessageToConsole(blink::WebConsoleMessage(
+      blink::WebConsoleMessage::LevelDebug, message));
+  const blink::WebString js = blink::WebString("window.dispatchEvent( new CustomEvent('stop-playing', { 'detail': 0 }) );");
+  frame_->executeScript(blink::WebScriptSource(js));
 
   const bool was_already_paused = paused_ || playback_rate_ == 0;
   paused_ = true;
