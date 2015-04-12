@@ -41,6 +41,7 @@ PepperPlatformAudioOutput* PepperPlatformAudioOutput::Create(
 }
 
 bool PepperPlatformAudioOutput::StartPlayback() {
+  printf ("\033[34m" "PepperPlatformAudioOutput::StartPlayback" "\033[0m\n");
   if (ipc_) {
     io_message_loop_proxy_->PostTask(
         FROM_HERE,

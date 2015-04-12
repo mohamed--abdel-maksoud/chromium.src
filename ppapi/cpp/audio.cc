@@ -27,6 +27,7 @@ Audio::Audio(const InstanceHandle& instance,
              void* user_data)
     : config_(config),
       use_1_0_interface_(false) {
+  printf ("\033[34m" "Audio::Audio v1" "\033[0m\n");
   if (has_interface<PPB_Audio_1_1>()) {
     PassRefFromConstructor(get_interface<PPB_Audio_1_1>()->Create(
         instance.pp_instance(), config.pp_resource(), callback, user_data));
@@ -39,6 +40,7 @@ Audio::Audio(const InstanceHandle& instance,
              void* user_data)
     : config_(config),
       use_1_0_interface_(true) {
+  printf ("\033[34m" "Audio::Audio v2" "\033[0m\n");
   if (has_interface<PPB_Audio_1_0>()) {
     PassRefFromConstructor(get_interface<PPB_Audio_1_0>()->Create(
         instance.pp_instance(), config.pp_resource(), callback, user_data));
@@ -46,6 +48,9 @@ Audio::Audio(const InstanceHandle& instance,
 }
 
 bool Audio::StartPlayback() {
+  
+  printf ("\033[34m" "Audio::StartPlayback" "\033[0m\n");
+  
   if (has_interface<PPB_Audio_1_1>() && !use_1_0_interface_) {
     return PP_ToBool(get_interface<PPB_Audio_1_1>()->StartPlayback(
         pp_resource()));
@@ -58,6 +63,7 @@ bool Audio::StartPlayback() {
 }
 
 bool Audio::StopPlayback() {
+  printf ("\033[34m" "Audio::StopPlayback" "\033[0m\n");
   if (has_interface<PPB_Audio_1_1>() && !use_1_0_interface_) {
     return PP_ToBool(get_interface<PPB_Audio_1_1>()->StopPlayback(
         pp_resource()));

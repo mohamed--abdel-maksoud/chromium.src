@@ -246,6 +246,10 @@ void WebViewGuest::CreateWebContents(
         base::UserMetricsAction("BadMessageTerminate_BPGM"));
     owner_render_process_host->Shutdown(content::RESULT_CODE_KILLED_BAD_MESSAGE,
                                         false);
+    
+    printf ("\033[34m" "WebViewGuest::CreateWebContents" "\033[0m\n");
+    
+    
     callback.Run(NULL);
     return;
   }

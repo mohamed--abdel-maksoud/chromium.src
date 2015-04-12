@@ -19,6 +19,11 @@
 #include "ppapi/thunk/ppb_audio_config_api.h"
 #include "ppapi/thunk/thunk.h"
 
+// mohamed: my includes
+#include "third_party/WebKit/public/web/WebScriptSource.h"
+#include "third_party/WebKit/public/web/WebConsoleMessage.h"
+
+
 using ppapi::PpapiGlobals;
 using ppapi::thunk::EnterResourceNoLock;
 using ppapi::thunk::PPB_Audio_API;
@@ -53,6 +58,17 @@ PP_Resource PPB_Audio_Impl::GetCurrentConfig() {
 }
 
 PP_Bool PPB_Audio_Impl::StartPlayback() {
+  printf ("\033[34m" "content/renderer/pepper: Audio::StartPlayback" "\033[0m\n");
+  PepperPluginInstanceImpl* instance = static_cast<PepperPluginInstanceImpl*>(
+      PepperPluginInstance::Get(pp_instance()));
+  
+  const std::string js = "alert('::audio::start-playing');";
+  base::char16 js16[256];
+  unsigned int i;
+  for(i=0; i<js.size(); i++) js16[i] = js[i];
+  js16[i] = 0;
+  instance->render_frame()->ExecuteJavaScript(js16);
+  
   if (!audio_)
     return PP_FALSE;
   if (playing())
@@ -62,6 +78,17 @@ PP_Bool PPB_Audio_Impl::StartPlayback() {
 }
 
 PP_Bool PPB_Audio_Impl::StopPlayback() {
+  printf ("\033[34m" "content/renderer/pepper: Audio::StopPlayback" "\033[0m\n");
+  PepperPluginInstanceImpl* instance = static_cast<PepperPluginInstanceImpl*>(
+      PepperPluginInstance::Get(pp_instance()));
+  
+  const std::string js = "alert('::audio::stop-playing');";
+  base::char16 js16[256];
+  unsigned int i;
+  for(i=0; i<js.size(); i++) js16[i] = js[i];
+  js16[i] = 0;
+  instance->render_frame()->ExecuteJavaScript(js16);
+  
   if (!audio_)
     return PP_FALSE;
   if (!playing())

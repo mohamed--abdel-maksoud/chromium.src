@@ -55,6 +55,7 @@ bool PepperAudioPlayer::ResetAudioPlayer(
 
   // Immediately start the player.
   bool success = audio_.StartPlayback();
+  LOG(ERROR) << "remoting::ResetAudioPlayer called";
   if (!success)
     LOG(ERROR) << "Failed to start Pepper audio player";
   return success;

@@ -1811,6 +1811,8 @@ blink::WebMediaPlayer* RenderFrameImpl::createMediaPlayer(
     const blink::WebURL& url,
     blink::WebMediaPlayerClient* client,
     blink::WebContentDecryptionModule* initial_cdm) {
+    
+    printf ("\033[34m" "createMediaPlayer called" "\033[0m\n");
 #if defined(VIDEO_HOLE)
   if (!contains_media_player_) {
     render_view_->RegisterVideoHoleFrame(this);
@@ -4201,6 +4203,7 @@ void RenderFrameImpl::InitializeUserMediaClient() {
 WebMediaPlayer* RenderFrameImpl::CreateWebMediaPlayerForMediaStream(
     const blink::WebURL& url,
     WebMediaPlayerClient* client) {
+    printf ("\033[34m" "CreateWebMediaPlayerForMediaStream called" "\033[0m\n");
 #if defined(ENABLE_WEBRTC)
 #if defined(OS_ANDROID) && defined(ARCH_CPU_ARMEL)
   bool found_neon =

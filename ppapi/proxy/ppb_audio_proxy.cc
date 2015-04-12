@@ -93,6 +93,7 @@ PP_Resource Audio::GetCurrentConfig() {
 }
 
 PP_Bool Audio::StartPlayback() {
+  printf ("\033[34m" "proxy::Audio::StartPlayback" "\033[0m\n");
   if (playing())
     return PP_TRUE;
   if (!PPB_Audio_Shared::IsThreadFunctionReady())
@@ -105,6 +106,7 @@ PP_Bool Audio::StartPlayback() {
 }
 
 PP_Bool Audio::StopPlayback() {
+  printf ("\033[34m" "proxy::Audio::StopPlayback" "\033[0m\n");
   if (!playing())
     return PP_TRUE;
   PluginDispatcher::GetForResource(this)->Send(

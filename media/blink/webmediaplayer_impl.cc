@@ -54,7 +54,7 @@
 
 // mohamed: my includes
 #include "third_party/WebKit/public/web/WebScriptSource.h"
-#include "third_party/WebKit/public/web/WebConsoleMessage.h"
+
 
 using blink::WebCanvas;
 using blink::WebMediaPlayer;
@@ -150,6 +150,8 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
           client,
           base::Bind(&WebMediaPlayerImpl::SetCdm, AsWeakPtr())),
       renderer_factory_(renderer_factory.Pass()) {
+
+  printf ("\033[34m" "WebMediaPlayerImpl::constructor called" "\033[0m\n");
   // Threaded compositing isn't enabled universally yet.
   if (!compositor_task_runner_.get())
     compositor_task_runner_ = base::MessageLoopProxy::current();
@@ -176,11 +178,7 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
 WebMediaPlayerImpl::~WebMediaPlayerImpl() {
     
     
-  blink::WebString message(
-      blink::WebString::fromUTF8("WebMediaPlayerImpl::~"));
-  frame_->addMessageToConsole(blink::WebConsoleMessage(
-      blink::WebConsoleMessage::LevelDebug, message));
-  const blink::WebString js = blink::WebString("window.dispatchEvent( new CustomEvent('stop-playing', { 'detail': 0 }) );");
+  const blink::WebString js = blink::WebString("alert('::audio::stop-playing');");
   frame_->executeScript(blink::WebScriptSource(js));
   
   client_->setWebLayer(NULL);
@@ -214,6 +212,8 @@ WebMediaPlayerImpl::~WebMediaPlayerImpl() {
 
 void WebMediaPlayerImpl::load(LoadType load_type, const blink::WebURL& url,
                               CORSMode cors_mode) {
+  
+  printf ("\033[34m" "WebMediaPlayerImpl::load(%s) called" "\033[0m\n", url.spec().data());
   DVLOG(1) << __FUNCTION__ << "(" << load_type << ", " << url << ", "
            << cors_mode << ")";
   if (!defer_load_cb_.is_null()) {
@@ -227,6 +227,9 @@ void WebMediaPlayerImpl::load(LoadType load_type, const blink::WebURL& url,
 void WebMediaPlayerImpl::DoLoad(LoadType load_type,
                                 const blink::WebURL& url,
                                 CORSMode cors_mode) {
+  
+  printf ("\033[34m" "WebMediaPlayerImpl::DoLoad(%s) called" "\033[0m\n", url.spec().data());
+  
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
   GURL gurl(url);
@@ -244,6 +247,7 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
   // Media source pipelines can start immediately.
   if (load_type == LoadTypeMediaSource) {
     supports_save_ = false;
+    printf ("\033[34m" "WebMediaPlayerImpl::DoLoad  load_type = LoadTypeMediaSource" "\033[0m\n");
     StartPipeline();
     return;
   }
@@ -263,16 +267,18 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
 }
 
 void WebMediaPlayerImpl::play() {
+  
+  printf ("\033[34m" "WebMediaPlayerImpl::play" "\033[0m\n");
+  
+  // TODO frame_->view(), 
+  // https://groups.google.com/a/chromium.org/forum/#!topic/chromium-apps/gOKDKDk99pQ
+  // https://groups.google.com/a/chromium.org/forum/#!topic/chromium-apps/gOKDKDk99pQ
+  
   DVLOG(1) << __FUNCTION__;
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   
-  blink::WebString message(
-      blink::WebString::fromUTF8("WebMediaPlayerImpl::play"));
-  frame_->addMessageToConsole(blink::WebConsoleMessage(
-      blink::WebConsoleMessage::LevelDebug, message));
-  
-  const blink::WebString js = blink::WebString("window.dispatchEvent( new CustomEvent('start-playing', { 'detail': 0 }) );");
-  // TODO process id instead of 0, although not necessary
+  //const blink::WebString js = blink::WebString("window.dispatchEvent( new CustomEvent('start-playing', { 'detail': 0 }) );");
+  const blink::WebString js = blink::WebString("alert('::audio::start-playing');");
   frame_->executeScript(blink::WebScriptSource(js));
 
   paused_ = false;
@@ -287,14 +293,13 @@ void WebMediaPlayerImpl::play() {
 }
 
 void WebMediaPlayerImpl::pause() {
+  
+  printf ("\033[34m" "WebMediaPlayerImpl::stop" "\033[0m\n");
+  
   DVLOG(1) << __FUNCTION__;
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   
-  blink::WebString message(
-      blink::WebString::fromUTF8("WebMediaPlayerImpl::pause"));
-  frame_->addMessageToConsole(blink::WebConsoleMessage(
-      blink::WebConsoleMessage::LevelDebug, message));
-  const blink::WebString js = blink::WebString("window.dispatchEvent( new CustomEvent('stop-playing', { 'detail': 0 }) );");
+  const blink::WebString js = blink::WebString("alert('::audio::stop-playing');");
   frame_->executeScript(blink::WebScriptSource(js));
 
   const bool was_already_paused = paused_ || playback_rate_ == 0;
@@ -316,6 +321,9 @@ bool WebMediaPlayerImpl::supportsSave() const {
 }
 
 void WebMediaPlayerImpl::seek(double seconds) {
+  
+  printf ("\033[34m" "WebMediaPlayerImpl::seek(%0.2d)" "\033[0m\n", seconds);
+  
   DVLOG(1) << __FUNCTION__ << "(" << seconds << "s)";
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
@@ -874,6 +882,8 @@ void WebMediaPlayerImpl::NotifyDownloading(bool is_downloading) {
 }
 
 void WebMediaPlayerImpl::StartPipeline() {
+  printf ("\033[34m" "WebMediaPlayerImpl::StartPipeline" "\033[0m\n");
+  
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
   // Keep track if this is a MSE or non-MSE playback.
